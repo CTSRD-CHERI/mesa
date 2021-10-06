@@ -646,7 +646,11 @@ union pointer
 static inline void
 save_pointer(Node *dest, void *src)
 {
-   union pointer p;
+#ifdef __CHERI_PURE_CAPABILITY__
+    /* Hopefully dest is aligned to pointer alignment */
+    *(void**)dest = src;
+#else
+    union pointer p;
    unsigned i;
 
    STATIC_ASSERT(POINTER_DWORDS == 1 || POINTER_DWORDS == 2);
@@ -656,6 +660,7 @@ save_pointer(Node *dest, void *src)
 
    for (i = 0; i < POINTER_DWORDS; i++)
       dest[i].ui = p.dwords[i];
+#endif
 }
 
 
@@ -665,6 +670,10 @@ save_pointer(Node *dest, void *src)
 static inline void *
 get_pointer(const Node *node)
 {
+#ifdef __CHERI_PURE_CAPABILITY__
+    /* Hopefully node is aligned to pointer alignment */
+    return *(void**)node;
+#else
    union pointer p;
    unsigned i;
 
@@ -672,6 +681,7 @@ get_pointer(const Node *node)
       p.dwords[i] = node[i].ui;
 
    return p.ptr;
+#endif
 }
 
 

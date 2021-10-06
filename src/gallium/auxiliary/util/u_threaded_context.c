@@ -35,6 +35,10 @@
 #include "util/perf/cpu_trace.h"
 #include "compiler/shader_info.h"
 
+#ifndef MAX
+#define MAX(a, b) ((a > b) ? (a) : (b))
+#endif
+
 #if TC_DEBUG >= 1
 #define tc_assert assert
 #else
@@ -3530,10 +3534,11 @@ is_next_call_a_mergeable_draw(struct tc_draw_single *first,
    if (next->base.call_id != TC_CALL_draw_single)
       return false;
 
-   STATIC_ASSERT(offsetof(struct pipe_draw_info, min_index) ==
-                 sizeof(struct pipe_draw_info) - 8);
-   STATIC_ASSERT(offsetof(struct pipe_draw_info, max_index) ==
-                 sizeof(struct pipe_draw_info) - 4);
+#define DRAW_INFO_SIZE_PADDING MAX(0, sizeof(void*) - 2 * sizeof(int))
+    STATIC_ASSERT(offsetof(struct pipe_draw_info, min_index) ==
+                      sizeof(struct pipe_draw_info) - DRAW_INFO_SIZE_PADDING - 8);
+    STATIC_ASSERT(offsetof(struct pipe_draw_info, max_index) ==
+                      sizeof(struct pipe_draw_info) - DRAW_INFO_SIZE_PADDING - 4);
    /* All fields must be the same except start and count. */
    /* u_threaded_context stores start/count in min/max_index for single draws. */
    return memcmp((uint32_t*)&first->info, (uint32_t*)&next->info,
