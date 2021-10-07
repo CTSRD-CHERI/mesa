@@ -110,8 +110,13 @@ typedef intptr_t EGLNativeWindowType;
 #include <X11/Xutil.h>
 
 typedef Display *EGLNativeDisplayType;
+#ifdef __CHERI_PURE_CAPABILITY__
+typedef khronos_uintptr_t EGLNativePixmapType;
+typedef khronos_uintptr_t EGLNativeWindowType;
+#else
 typedef Pixmap   EGLNativePixmapType;
 typedef Window   EGLNativeWindowType;
+#endif
 
 #elif defined(__unix__)
 
