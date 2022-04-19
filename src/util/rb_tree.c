@@ -67,13 +67,13 @@ rb_node_set_red(struct rb_node *n)
 static void
 rb_node_copy_color(struct rb_node *dst, struct rb_node *src)
 {
-    dst->parent = (dst->parent & ~1ull) | (src->parent & 1);
+    dst->parent = (dst->parent & ~1ull) | (size_t)(src->parent & 1);
 }
 
 static void
 rb_node_set_parent(struct rb_node *n, struct rb_node *p)
 {
-    n->parent = (n->parent & 1) | (uintptr_t)p;
+    n->parent = (size_t)(n->parent & 1) | (uintptr_t)p;
 }
 
 static struct rb_node *

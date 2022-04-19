@@ -151,8 +151,8 @@ _mesa_image_offset( GLuint dimensions,
 
    if (type == GL_BITMAP) {
       /* BITMAP data */
-      GLintptr bytes_per_row;
-      GLintptr bytes_per_image;
+      GLsizeiptr bytes_per_row;
+      GLsizeiptr bytes_per_image;
       /* components per pixel for color or stencil index: */
       const GLint comp_per_pixel = 1;
 
@@ -170,8 +170,8 @@ _mesa_image_offset( GLuint dimensions,
    }
    else {
       /* Non-BITMAP data */
-      GLintptr bytes_per_pixel, bytes_per_row, remainder, bytes_per_image;
-      GLintptr topOfImage;
+      GLsizeiptr bytes_per_pixel, bytes_per_row, remainder, bytes_per_image;
+      GLsizeiptr topOfImage;
 
       bytes_per_pixel = _mesa_bytes_per_pixel( format, type );
 

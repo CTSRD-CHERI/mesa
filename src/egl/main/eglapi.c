@@ -1111,7 +1111,7 @@ _fixupNativeWindow(_EGLDisplay *disp, void *native_window)
        * `Window*`.  Convert `Window*` to `Window` because that's what
        * dri2_x11_create_window_surface() expects.
        */
-      return (void *)(* (Window*) native_window);
+      return (void *)(uintptr_t)(* (Window*) native_window);
    }
 #endif
 #ifdef HAVE_XCB_PLATFORM
@@ -1175,7 +1175,7 @@ _fixupNativePixmap(_EGLDisplay *disp, void *native_pixmap)
     * dri2_x11_create_pixmap_surface() expects.
     */
    if (disp && disp->Platform == _EGL_PLATFORM_X11 && native_pixmap != NULL)
-      return (void *)(* (Pixmap*) native_pixmap);
+      return (void *)(uintptr_t)(* (Pixmap*) native_pixmap);
 #endif
 #ifdef HAVE_XCB_PLATFORM
    if (disp && disp->Platform == _EGL_PLATFORM_XCB && native_pixmap != NULL) {

@@ -468,7 +468,7 @@ _mesa_access_flags_to_transfer_flags(GLbitfield access, bool wholeBuffer)
  */
 void *
 _mesa_bufferobj_map_range(struct gl_context *ctx,
-                           GLintptr offset, GLsizeiptr length, GLbitfield access,
+                           GLsizeiptr offset, GLsizeiptr length, GLbitfield access,
                            struct gl_buffer_object *obj,
                            gl_map_buffer_index index)
 {
@@ -516,7 +516,7 @@ _mesa_bufferobj_map_range(struct gl_context *ctx,
 
 void
 _mesa_bufferobj_flush_mapped_range(struct gl_context *ctx,
-                                   GLintptr offset, GLsizeiptr length,
+                                   GLsizeiptr offset, GLsizeiptr length,
                                    struct gl_buffer_object *obj,
                                    gl_map_buffer_index index)
 {

@@ -86,13 +86,13 @@ _mesa_bufferobj_get_subdata(struct gl_context *ctx,
                             void *data, struct gl_buffer_object *obj);
 
 void *_mesa_bufferobj_map_range(struct gl_context *ctx,
-                                GLintptr offset, GLsizeiptr length,
+                                GLsizeiptr offset, GLsizeiptr length,
                                 GLbitfield access,
                                 struct gl_buffer_object *obj,
                                 gl_map_buffer_index index);
 
 void _mesa_bufferobj_flush_mapped_range(struct gl_context *ctx,
-                                        GLintptr offset, GLsizeiptr length,
+                                        GLsizeiptr offset, GLsizeiptr length,
                                         struct gl_buffer_object *obj,
                                         gl_map_buffer_index index);
 GLboolean _mesa_bufferobj_unmap(struct gl_context *ctx, struct gl_buffer_object *obj,

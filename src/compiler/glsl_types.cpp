@@ -1428,12 +1428,12 @@ unsigned
 glsl_type::record_key_hash(const void *a)
 {
    const glsl_type *const key = (glsl_type *) a;
-   uintptr_t hash = key->length;
+   size_t hash = key->length;
    unsigned retval;
 
    for (unsigned i = 0; i < key->length; i++) {
       /* casting pointer to uintptr_t */
-      hash = (hash * 13 ) + (uintptr_t) key->fields.structure[i].type;
+      hash = (hash * 13 ) + (size_t) key->fields.structure[i].type;
    }
 
    if (sizeof(hash) == 8)
