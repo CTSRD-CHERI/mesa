@@ -46,12 +46,12 @@ struct
 #if _WIN64
 __declspec(align(16))
 #else
- __declspec(align(8))
+ __declspec(align(16))
 #endif
 #elif defined(__LP64__)
  __attribute__((aligned(16)))
 #else
- __attribute__((aligned(8)))
+ __attribute__((aligned(16)))
 #endif
    ralloc_header
 {
@@ -551,16 +551,16 @@ ralloc_vasprintf_rewrite_tail(char **str, size_t *start, const char *fmt,
  */
 
 #define MIN_LINEAR_BUFSIZE 2048
-#define SUBALLOC_ALIGNMENT 8
+#define SUBALLOC_ALIGNMENT 16
 #define LMAGIC 0x87b9c7d3
 
 struct
 #ifdef _MSC_VER
- __declspec(align(8))
+ __declspec(align(16))
 #elif defined(__LP64__)
  __attribute__((aligned(16)))
 #else
- __attribute__((aligned(8)))
+ __attribute__((aligned(16)))
 #endif
    linear_header {
 #ifndef NDEBUG
@@ -589,6 +589,8 @@ struct
 struct linear_size_chunk {
    unsigned size; /* for realloc */
    unsigned _padding;
+   unsigned _padding1;
+   unsigned _padding2;
 };
 
 typedef struct linear_header linear_header;
