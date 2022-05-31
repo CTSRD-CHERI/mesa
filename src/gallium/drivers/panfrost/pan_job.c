@@ -661,7 +661,7 @@ panfrost_batch_submit_ioctl(struct panfrost_batch *batch,
         submit.jc = first_job_desc;
         submit.requirements = reqs;
         if (in_sync) {
-                submit.in_syncs = (u64)(uintptr_t)(&in_sync);
+                submit.in_syncs = (uintptr_t)(&in_sync);
                 submit.in_sync_count = 1;
         }
 
@@ -708,7 +708,7 @@ panfrost_batch_submit_ioctl(struct panfrost_batch *batch,
         /* Always used on Bifrost, occassionally used on Midgard */
         bo_handles[submit.bo_handle_count++] = dev->sample_positions->gem_handle;
 
-        submit.bo_handles = (u64) (uintptr_t) bo_handles;
+        submit.bo_handles = (uintptr_t) bo_handles;
         if (ctx->is_noop)
                 ret = 0;
         else

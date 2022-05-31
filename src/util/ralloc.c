@@ -37,7 +37,7 @@
 
 #define CANARY 0x5A1106
 
-#if defined(__LP64__) || defined(_WIN64)
+#if defined(__LP64__) || defined(_WIN64) || defined(__CHERI_PURE_CAPABILITY__)
 #define HEADER_ALIGN alignas(16)
 #else
 #define HEADER_ALIGN alignas(8)
@@ -924,7 +924,11 @@ gc_sweep_end(gc_ctx *ctx)
  */
 
 #define MIN_LINEAR_BUFSIZE 2048
+#ifdef __CHERI_PURE_CAPABILITY__
+#define SUBALLOC_ALIGNMENT 16
+#else
 #define SUBALLOC_ALIGNMENT 8
+#endif
 #define LMAGIC 0x87b9c7d3
 
 struct linear_header {
@@ -957,6 +961,8 @@ struct linear_header {
 struct linear_size_chunk {
    unsigned size; /* for realloc */
    unsigned _padding;
+   unsigned _padding1;
+   unsigned _padding2;
 };
 
 typedef struct linear_header linear_header;
