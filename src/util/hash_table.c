@@ -673,7 +673,7 @@ _mesa_hash_string(const void *_key)
 uint32_t
 _mesa_hash_pointer(const void *pointer)
 {
-   uintptr_t num = (uintptr_t) pointer;
+   size_t num = (size_t) (uintptr_t) pointer;
    return (uint32_t) ((num >> 2) ^ (num >> 6) ^ (num >> 10) ^ (num >> 14));
 }
 

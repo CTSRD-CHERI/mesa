@@ -53,7 +53,7 @@ pack_data(const struct ssa_result_range r)
 static struct ssa_result_range
 unpack_data(const void *p)
 {
-   const uintptr_t v = (uintptr_t) p;
+   const size_t v = (size_t) p;
 
    return (struct ssa_result_range){
       .range       = v & 0xff,
@@ -66,7 +66,7 @@ unpack_data(const void *p)
 static void *
 pack_key(const struct nir_alu_instr *instr, nir_alu_type type)
 {
-   uintptr_t type_encoding;
+   size_t type_encoding;
    uintptr_t ptr = (uintptr_t) instr;
 
    /* The low 2 bits have to be zero or this whole scheme falls apart. */

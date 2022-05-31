@@ -82,10 +82,14 @@ uintptr_to_pointer( uintptr_t u )
  * Return a pointer aligned to next multiple of N bytes.
  */
 static inline void *
-align_pointer( const void *unaligned, uintptr_t alignment )
+align_pointer( void *unaligned, uintptr_t alignment )
 {
+#if defined(__has_builtin) && __has_builtin(__builtin_align_up)
+    return __builtin_align_up(unaligned, alignment);
+#else
    uintptr_t aligned = (pointer_to_uintptr( unaligned ) + alignment - 1) & ~(alignment - 1);
    return uintptr_to_pointer( aligned );
+#endif
 }
 
 

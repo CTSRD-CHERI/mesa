@@ -180,7 +180,7 @@ struct drm_amdgpu_bo_list_in {
 	/** Size of each element describing BO */
 	__u32 bo_info_size;
 	/** Pointer to array describing BOs */
-	__u64 bo_info_ptr;
+	drm_uptr_t bo_info_ptr;
 };
 
 struct drm_amdgpu_bo_list_entry {
@@ -317,7 +317,7 @@ union drm_amdgpu_sched {
 #define AMDGPU_GEM_USERPTR_REGISTER	(1 << 3)
 
 struct drm_amdgpu_gem_userptr {
-	__u64		addr;
+	drm_uptr_t 	addr;
 	__u64		size;
 	/* AMDGPU_GEM_USERPTR_* */
 	__u32		flags;
@@ -454,7 +454,7 @@ struct drm_amdgpu_fence {
 
 struct drm_amdgpu_wait_fences_in {
 	/** This points to uint64_t * which points to fences */
-	__u64 fences;
+	drm_uptr_t fences;
 	__u32 fence_count;
 	__u32 wait_all;
 	__u64 timeout_ns;
@@ -480,7 +480,7 @@ struct drm_amdgpu_gem_op {
 	/** AMDGPU_GEM_OP_* */
 	__u32	op;
 	/** Input or return value */
-	__u64	value;
+	drm_uptr_t	value;
 };
 
 #define AMDGPU_VA_OP_MAP			1
@@ -557,7 +557,7 @@ struct drm_amdgpu_gem_va {
 struct drm_amdgpu_cs_chunk {
 	__u32		chunk_id;
 	__u32		length_dw;
-	__u64		chunk_data;
+	drm_uptr_t	chunk_data;
 };
 
 struct drm_amdgpu_cs_in {
@@ -568,7 +568,7 @@ struct drm_amdgpu_cs_in {
 	__u32		num_chunks;
 	__u32		flags;
 	/** this points to __u64 * which point to cs chunks */
-	__u64		chunks;
+	drm_uptr_t	chunks;
 };
 
 struct drm_amdgpu_cs_out {
@@ -846,7 +846,7 @@ struct drm_amdgpu_query_fw {
 /* Input structure for the INFO ioctl */
 struct drm_amdgpu_info {
 	/* Where the return value will be stored */
-	__u64 return_pointer;
+	drm_uptr_t return_pointer;
 	/* The size of the return value. Just like "size" in "snprintf",
 	 * it limits how many bytes the kernel can write. */
 	__u32 return_size;

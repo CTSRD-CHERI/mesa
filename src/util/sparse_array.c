@@ -45,8 +45,8 @@ util_sparse_array_init(struct util_sparse_array *arr,
    assert(node_size >= 2 && node_size == (1ull << arr->node_size_log2));
 }
 
-#define NODE_PTR_MASK (~((uintptr_t)NODE_ALLOC_ALIGN - 1))
-#define NODE_LEVEL_MASK ((uintptr_t)NODE_ALLOC_ALIGN - 1)
+#define NODE_PTR_MASK (~((size_t)NODE_ALLOC_ALIGN - 1))
+#define NODE_LEVEL_MASK ((size_t)NODE_ALLOC_ALIGN - 1)
 #define NULL_NODE 0
 
 static inline uintptr_t

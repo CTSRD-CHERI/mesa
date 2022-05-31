@@ -239,14 +239,14 @@ gather_vars_written(struct copy_prop_var_state *state,
             /* Destination in all of store_deref, copy_deref and the atomics is src[0]. */
             nir_deref_instr *dst = nir_src_as_deref(intrin->src[0]);
 
-            uintptr_t mask = intrin->intrinsic == nir_intrinsic_store_deref ?
+            size_t mask = intrin->intrinsic == nir_intrinsic_store_deref ?
                nir_intrinsic_write_mask(intrin) : (1 << glsl_get_vector_elements(dst->type)) - 1;
 
             struct hash_entry *ht_entry = _mesa_hash_table_search(written->derefs, dst);
             if (ht_entry)
                ht_entry->data = (void *)(mask | (uintptr_t)ht_entry->data);
             else
-               _mesa_hash_table_insert(written->derefs, dst, (void *)mask);
+               _mesa_hash_table_insert(written->derefs, dst, (void *)(uintptr_t)mask);
 
             break;
          }
@@ -297,8 +297,8 @@ gather_vars_written(struct copy_prop_var_state *state,
                _mesa_hash_table_search_pre_hashed(written->derefs, new_entry->hash,
                                                   new_entry->key);
             if (old_entry) {
-               nir_component_mask_t merged = (uintptr_t) new_entry->data |
-                                             (uintptr_t) old_entry->data;
+               nir_component_mask_t merged = (size_t) new_entry->data |
+                                             (size_t) old_entry->data;
                old_entry->data = (void *) ((uintptr_t) merged);
             } else {
                _mesa_hash_table_insert_pre_hashed(written->derefs, new_entry->hash,

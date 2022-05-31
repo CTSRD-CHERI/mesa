@@ -2992,10 +2992,11 @@ is_next_call_a_mergeable_draw(struct tc_draw_single *first,
 
    simplify_draw_info(&next->info);
 
+#define DRAW_INFO_SIZE_PADDING MAX(0, sizeof(void*) - 2 * sizeof(int))
    STATIC_ASSERT(offsetof(struct pipe_draw_info, min_index) ==
-                 sizeof(struct pipe_draw_info) - 8);
-   STATIC_ASSERT(offsetof(struct pipe_draw_info, max_index) ==
-                 sizeof(struct pipe_draw_info) - 4);
+                      sizeof(struct pipe_draw_info) - DRAW_INFO_SIZE_PADDING - 8);
+    STATIC_ASSERT(offsetof(struct pipe_draw_info, max_index) ==
+                      sizeof(struct pipe_draw_info) - DRAW_INFO_SIZE_PADDING - 4);
    /* All fields must be the same except start and count. */
    /* u_threaded_context stores start/count in min/max_index for single draws. */
    return memcmp((uint32_t*)&first->info, (uint32_t*)&next->info,

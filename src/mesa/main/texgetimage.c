@@ -1722,7 +1722,7 @@ getcompressedteximage_error_check(struct gl_context *ctx,
    if (ctx->Pack.BufferObj) {
       /* do bounds checking on PBO write */
       if ((GLubyte *) pixels + totalBytes >
-          (GLubyte *) ctx->Pack.BufferObj->Size) {
+          (GLubyte *) ctx->Pack.BufferObj->Data + ctx->Pack.BufferObj->Size) {
          _mesa_error(ctx, GL_INVALID_OPERATION,
                      "%s(out of bounds PBO access)", caller);
          return true;
