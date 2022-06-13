@@ -1563,27 +1563,26 @@ memdup(const void *src, GLsizei bytes)
  * Allocate space for a display list instruction (opcode + payload space).
  * \param opcode  the instruction opcode (OPCODE_* value)
  * \param bytes   instruction payload size (not counting opcode)
- * \param align8  does the payload need to be 8-byte aligned?
+ * \param align16  does the payload need to be 8-byte aligned?
  *                This is only relevant in 64-bit environments.
  * \return pointer to allocated memory (the payload will be at pointer+1)
  */
 static Node *
-dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align8)
+dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align16)
 {
    const GLuint numNodes = 1 + (bytes + sizeof(Node) - 1) / sizeof(Node);
    const GLuint contNodes = 1 + POINTER_DWORDS;  /* size of continue info */
-   GLuint nopNode;
+   GLuint nopNode, j;
    Node *n;
 
    assert(bytes <= BLOCK_SIZE * sizeof(Node));
 
-   if (sizeof(void *) > sizeof(Node) && align8
-       && ctx->ListState.CurrentPos % 2 == 0) {
+   if (sizeof(void *) > sizeof(Node) && align16) {
       /* The opcode would get placed at node[0] and the payload would start
        * at node[1].  But the payload needs to be at an even offset (8-byte
        * multiple).
        */
-      nopNode = 1;
+      nopNode = 3 - ctx->ListState.CurrentPos % 4;
    }
    else {
       nopNode = 0;
@@ -1594,6 +1593,14 @@ dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align8)
       /* This block is full.  Allocate a new block and chain to it */
       Node *newblock;
       n = ctx->ListState.CurrentBlock + ctx->ListState.CurrentPos;
+
+      nopNode = 3 - ctx->ListState.CurrentPos % 4;
+      for (j = 0; j < nopNode; j++) {
+        n[0].opcode = OPCODE_NOP;
+        n[0].InstSize = 1;
+        n++;
+      }
+
       n[0].opcode = OPCODE_CONTINUE;
       newblock = malloc(sizeof(Node) * BLOCK_SIZE);
       if (!newblock) {
@@ -1615,15 +1622,17 @@ dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align8)
        *   node[1] = OPCODE_x;
        *   node[2] = start of payload
        */
-      nopNode = sizeof(void *) > sizeof(Node) && align8;
+      if (sizeof(void *) > sizeof(Node) && align16)
+        nopNode = 3;
    }
 
    n = ctx->ListState.CurrentBlock + ctx->ListState.CurrentPos;
    if (nopNode) {
-      assert(ctx->ListState.CurrentPos % 2 == 0); /* even value */
-      n[0].opcode = OPCODE_NOP;
-      n[0].InstSize = 1;
-      n++;
+      for (j = 0; j < nopNode; j++) {
+        n[0].opcode = OPCODE_NOP;
+        n[0].InstSize = 1;
+        n++;
+      }
       /* The "real" opcode will now be at an odd location and the payload
        * will be at an even location.
        */
