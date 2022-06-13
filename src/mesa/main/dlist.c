@@ -1209,25 +1209,37 @@ memdup(const void *src, GLsizei bytes)
  * Allocate space for a display list instruction (opcode + payload space).
  * \param opcode  the instruction opcode (OPCODE_* value)
  * \param bytes   instruction payload size (not counting opcode)
- * \param align8  does the payload need to be 8-byte aligned?
- *                This is only relevant in 64-bit environments.
+ * \param align   does the payload need to be pointer aligned?
+ *                This is only relevant in 64-bit and CHERI environments.
  * \return pointer to allocated memory (the payload will be at pointer+1)
  */
 static Node *
-dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align8)
+dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align)
 {
    const GLuint numNodes = 1 + (bytes + sizeof(Node) - 1) / sizeof(Node);
    const GLuint contNodes = 1 + POINTER_DWORDS;  /* size of continue info */
+   GLuint ii, numNopNodes;
 
    assert(bytes <= BLOCK_SIZE * sizeof(Node));
 
-   /* If this node needs to start on an 8-byte boundary, pad the last node. */
-   if (sizeof(void *) == 8 && align8 &&
-       ctx->ListState.CurrentPos % 2 == 1) {
+   if (align &&
+       (sizeof(void *) == 16 || sizeof(void *) == 8)) {
+      numNopNodes = ctx->ListState.CurrentPos % (sizeof(void *) / 4);
+      if (numNopNodes != 0) {
+         numNopNodes = (sizeof(void *) / 4) - numNopNodes;
+      }
+   } else {
+      numNopNodes = 0;
+   }
+
+   /* If this node needs to start on a pointer boundary, pad the last nodes. */
+   if (numNopNodes != 0) {
       Node *last = ctx->ListState.CurrentBlock + ctx->ListState.CurrentPos -
                    ctx->ListState.LastInstSize;
-      last->InstSize++;
-      ctx->ListState.CurrentPos++;
+      for (ii = 0; ii < numNopNodes; ii++) {
+         last->InstSize++;
+         ctx->ListState.CurrentPos++;
+      }
    }
 
    if (ctx->ListState.CurrentPos + numNodes + contNodes > BLOCK_SIZE) {
@@ -1241,7 +1253,7 @@ dlist_alloc(struct gl_context *ctx, OpCode opcode, GLuint bytes, bool align8)
          return NULL;
       }
 
-      /* a fresh block should be 8-byte aligned on 64-bit systems */
+      /* a fresh block should be aligned to a pointer size */
       assert(((GLintptr) newblock) % sizeof(void *) == 0);
 
       save_pointer(&n[1], newblock);
