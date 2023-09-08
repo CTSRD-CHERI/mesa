@@ -558,6 +558,8 @@ enum gc_flags {
 
 typedef struct
 {
+   HEADER_ALIGN
+
 #ifndef NDEBUG
    /* A canary value used to determine whether a pointer is allocated using gc_alloc. */
    unsigned canary;
